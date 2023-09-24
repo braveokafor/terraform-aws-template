@@ -47,20 +47,22 @@ jobs:
         id: parse-config
         run: |
           export BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
-          export BRANCH_PREFIX="${BRANCH_NAME%/*}/"
-
           if [[ $BRANCH_NAME == *"/"* ]]; then
             export BRANCH_PREFIX="${BRANCH_NAME%/*}/"
           else
             export BRANCH_PREFIX=$BRANCH_NAME
           fi
 
+          function fetch_config() {
+            local FILE=$1
+            TERRAFORM_DIR=$(cat $FILE | yq eval '.TERRAFORM_DIR')
+            BRANCH_CONFIG=$(cat $FILE | yq eval -o=json | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
+          }
+
           if [ -f "tf-cfg.yaml" ]; then
-              TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval -o=json | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
+              fetch_config "tf-cfg.yaml"
           elif [ -f "tf-cfg.json" ]; then
-              TERRAFORM_DIR=$(cat tf-cfg.json | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval -o=json | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
+              fetch_config "tf-cfg.json"
           else
               TERRAFORM_DIR=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
@@ -71,14 +73,10 @@ jobs:
           SHOULD_PLAN=$(echo "$BRANCH_CONFIG" | yq eval '.SHOULD_PLAN' -)
           SHOULD_APPLY=$(echo "$BRANCH_CONFIG" | yq eval '.SHOULD_APPLY' -)
 
-          echo "workspace: $WORKSPACE"
-          echo "varfile: $VARFILE"
-          echo "should_plan: $SHOULD_PLAN"
-          echo "should_apply: $SHOULD_APPLY"
-          echo "terraform_dir: $TERRAFORM_DIR"
-
           echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
           echo "varfile=$VARFILE" >> $GITHUB_OUTPUT
           echo "should_plan=$SHOULD_PLAN" >> $GITHUB_OUTPUT
           echo "should_apply=$SHOULD_APPLY" >> $GITHUB_OUTPUT
           echo "terraform_dir=$TERRAFORM_DIR" >> $GITHUB_OUTPUT
+
+          cat $GITHUB_OUTPUT
