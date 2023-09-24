@@ -43,6 +43,9 @@ jobs:
         run: |
           BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
 
+          pwd
+          ls
+
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
