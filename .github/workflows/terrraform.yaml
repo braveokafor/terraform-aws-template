@@ -115,7 +115,7 @@ jobs:
       #BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
       WORKSPACE: "${{ needs.setup.outputs.workspace }}"
       VARFILES: "${{ needs.setup.outputs.varfile }}"
-      TERRAFORM_DIR: "${{ needs.setup.outputs.varfile }}"
+      TERRAFORM_DIR: "${{ needs.setup.outputs.terraform_dir }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
