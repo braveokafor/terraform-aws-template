@@ -1,0 +1,46 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+permissions:
+  contents: read
+
+env:
+  TERRAFORM_VERSION: 1.4.6
+  DEFAULT_BRANCH_CONFIG: |
+    {
+    "TERRAFORM_DIR": ".",
+    "BRANCHES": [
+        {
+            "BRANCH": "default",
+            "WORKSPACE": "default",
+            "VARFILES": [
+                "terraform.tfvars"
+            ],
+            "SHOULD_PLAN": true,
+            "SHOULD_APPLY": true
+        }
+      ]
+    }
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      varfile: ${{ steps.branch-check.outputs.varfile }}
+      workspace: ${{ steps.branch-check.outputs.workspace }}
+      terraform_dir: ${{ steps.branch-check.outputs.terraform_dir }}
+      should_plan: ${{ steps.branch-check.outputs.should_plan }}
+      should_apply: ${{ steps.branch-check.outputs.should_apply }}
+    steps:
+      - name: Parse Configuration
+        id: parse-config
+        run: |
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          BRANCH_CONFIG=$(cat tf-cfg.yaml || cat tf-cfg.json || ${{ env.DEFAULT_BRANCH_CONFIG }})
