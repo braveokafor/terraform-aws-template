@@ -38,7 +38,9 @@ jobs:
       should_apply: ${{ steps.parse-config.outputs.should_apply }}
       terraform_dir: ${{ steps.parse-config.outputs.terraform_dir }}
     steps:
-      - run: ls
+      - name: List Files
+        id: list-files
+        uses: mirko-felice/list-files-action@v3.0.5
       - name: Parse Configuration
         id: parse-config
         run: |
