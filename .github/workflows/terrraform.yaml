@@ -170,3 +170,20 @@ jobs:
           OUTPUT=$(echo "$OUTPUT" | jq -R -s -c .)
 
           echo "output=$OUTPUT" >> $GITHUB_OUTPUT
+
+      - name: Setup Graphviz
+        id: setup-graphviz
+        uses: ts-graphviz/setup-graphviz@v1
+
+      - name: Generate Terraform Graph
+        id: generate-graph
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        run: |
+          terraform graph -draw-cycles -type=plan-refresh-only -plan=plan.tfplan | dot -Tsvg > plan.svg
+
+      - name: Upload Terraform Plan
+        id: upload-artefacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: plan-artefacts
+          path: ${{ env.TERRAFORM_PATH }}/plan.*
