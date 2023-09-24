@@ -54,9 +54,6 @@ jobs:
               BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
           fi
 
-          echo $BRANCH_CONFIG | yq
-          #echo BRANCH_CONFIG | jq
-
           WORKSPACE=$(echo "$BRANCH_CONFIG" | yq eval '.WORKSPACE' -)
           VARFILE=$(echo "$BRANCH_CONFIG" | yq eval '.VARFILES' -)
           SHOULD_PLAN=$(echo "$BRANCH_CONFIG" | yq eval '.SHOULD_PLAN' -)
