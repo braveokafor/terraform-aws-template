@@ -42,11 +42,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-          
+
       - name: Parse Configuration
         id: parse-config
         run: |
-          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          export BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
 
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
