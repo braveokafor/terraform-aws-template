@@ -73,12 +73,6 @@ jobs:
           SHOULD_PLAN=$(echo "$BRANCH_CONFIG" | yq eval '.SHOULD_PLAN' -)
           SHOULD_APPLY=$(echo "$BRANCH_CONFIG" | yq eval '.SHOULD_APPLY' -)
 
-          echo "workspace: $WORKSPACE"
-          echo "varfile: $VARFILE"
-          echo "should_plan: $SHOULD_PLAN"
-          echo "should_apply: $SHOULD_APPLY"
-          echo "terraform_dir: $TERRAFORM_DIR"
-
           echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
           echo "varfile=$VARFILE" >> $GITHUB_OUTPUT
           echo "should_plan=$SHOULD_PLAN" >> $GITHUB_OUTPUT
