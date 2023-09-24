@@ -100,7 +100,6 @@ jobs:
 
       - name: Terraform Format
         id: fmt
-        working-directory: ${{ env.TERRAFORM_PATH }}
         run: terraform fmt -list=true -check=true -recursive
 
   terraform-plan:
@@ -116,6 +115,7 @@ jobs:
       #BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
       WORKSPACE: "${{ needs.setup.outputs.workspace }}"
       VARFILES: "${{ needs.setup.outputs.varfile }}"
+      TERRAFORM_DIR: "${{ needs.setup.outputs.varfile }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -136,12 +136,12 @@ jobs:
 
       - name: Terraform Init
         id: init
-        working-directory: ${{ env.TERRAFORM_PATH }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform init
 
       - name: Set Terraform Workspace
         id: set-workspace
-        working-directory: ${{ env.TERRAFORM_PATH }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
           echo "Workspace: $WORKSPACE"
 
@@ -149,7 +149,7 @@ jobs:
 
       - name: Terraform Validate
         id: validate
-        working-directory: ${{ env.TERRAFORM_PATH }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
           OUTPUT=$(terraform validate -no-color)
 
@@ -158,12 +158,11 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        working-directory: ${{ env.TERRAFORM_PATH }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
           VARFILES_CMD=$(echo "$VARFILES" | jq -r '.[] | "-var-file=\"" + . + "\"" ' | tr '\n' ' ')
 
           terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
-          terraform plan -no-color -input=false -var-file=terraform/varfiles/common.tfvars -var-file=terraform/varfiles/production.tfvars -out=plan.tfplan
 
           OUTPUT=$(terraform show plan.tfplan)
           OUTPUT="$(echo "${OUTPUT}" | grep -v "Refreshing state")"
