@@ -45,10 +45,19 @@ jobs:
           BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
 
           if [ -f "tf-cfg.yaml" ]; then
-              BRANCH_CONFIG=$(cat tf-cfg.yaml)
+              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
           elif [ -f "tf-cfg.json" ]; then
-              BRANCH_CONFIG=$(cat tf-cfg.json)
+              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
           else
               BRANCH_CONFIG="${{ env.DEFAULT_BRANCH_CONFIG }}"
           fi
 
+          WORKSPACE=$(echo "$BRANCH_CONFIG" | yq eval ".WORKSPACE" -)
+          VARFILE=$(echo "$BRANCH_CONFIG" | yq eval ".VARFILE" -)
+          SHOULD_PLAN=$(echo "BRANCH_$CONFIG" | yq eval ".SHOULD_PLAN" -)
+          SHOULD_APPLY=$(echo "BRANCH_$CONFIG" | yq eval ".SHOULD_APPLY" -)
+
+          echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
+          echo "varfile=$VARFILE" >> $GITHUB_OUTPUT
+          echo "should_plan=$SHOULD_PLAN" >> $GITHUB_OUTPUT
+          echo "should_apply=$SHOULD_APPLY" >> $GITHUB_OUTPUT
