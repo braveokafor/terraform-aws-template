@@ -159,9 +159,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ${{ env.TERRAFORM_PATH }}
-        continue-on-error: true
         run: |
           VARFILES_CMD=$(echo $input | sed 's/[\[\]"]//g' | awk -F, '{for(i=1;i<=NF;i++) printf "-var-file=\"%s\" ", $i}')
+
+          echo $VARFILES_CMD
 
           terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
 
