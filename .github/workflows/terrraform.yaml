@@ -18,7 +18,6 @@ env:
     "TERRAFORM_DIR": ".",
     "BRANCHES": [
         {
-            "BRANCH": "default",
             "WORKSPACE": "default",
             "VARFILES": [
                 "terraform.tfvars"
@@ -33,11 +32,11 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      varfile: ${{ steps.branch-check.outputs.varfile }}
-      workspace: ${{ steps.branch-check.outputs.workspace }}
-      terraform_dir: ${{ steps.branch-check.outputs.terraform_dir }}
-      should_plan: ${{ steps.branch-check.outputs.should_plan }}
-      should_apply: ${{ steps.branch-check.outputs.should_apply }}
+      workspace: ${{ steps.parse-config.outputs.workspace }}
+      varfile: ${{ steps.parse-config.outputs.varfile }}
+      should_plan: ${{ steps.parse-config.outputs.should_plan }}
+      should_apply: ${{ steps.parse-config.outputs.should_apply }}
+      terraform_dir: ${{ steps.parse-config.outputs.terraform_dir }}
     steps:
       - name: Parse Configuration
         id: parse-config
@@ -45,11 +44,14 @@ jobs:
           BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
 
           if [ -f "tf-cfg.yaml" ]; then
+              TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
           elif [ -f "tf-cfg.json" ]; then
+              TERRAFORM_DIR=$(cat tf-cfg.json | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(cat tf-cfg.json | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
           else
-              BRANCH_CONFIG="${{ env.DEFAULT_BRANCH_CONFIG }}"
+              TERRAFORM_DIR=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.TERRAFORM_DIR')
+              BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
           fi
 
           WORKSPACE=$(echo "$BRANCH_CONFIG" | yq eval ".WORKSPACE" -)
@@ -61,3 +63,4 @@ jobs:
           echo "varfile=$VARFILE" >> $GITHUB_OUTPUT
           echo "should_plan=$SHOULD_PLAN" >> $GITHUB_OUTPUT
           echo "should_apply=$SHOULD_APPLY" >> $GITHUB_OUTPUT
+          echo "terraform_dir=$TERRAFORM_DIR" >> $GITHUB_OUTPUT
