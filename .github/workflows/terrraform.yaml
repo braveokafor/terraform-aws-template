@@ -162,7 +162,7 @@ jobs:
         run: |
           VARFILES_CMD=$(echo "$VARFILES" | jq -r '.[] | "-var-file=\"" + . + "\"" ' | tr '\n' ' ')
 
-          terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
+          #terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
           terraform plan -no-color -input=false -var-file=varfiles/production.tfvars -var-file=varfiles/common.tfvars -out=plan.tfplan
 
           OUTPUT=$(terraform show plan.tfplan)
