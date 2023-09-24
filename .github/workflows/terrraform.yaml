@@ -163,10 +163,11 @@ jobs:
           VARFILES_CMD=$(echo "$VARFILES" | jq -r '.[] | "-var-file=\"" + . + "\"" ' | tr '\n' ' ')
 
           terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
+          terraform plan -no-color -input=false -var-file=terraform/varfiles/common.tfvars -var-file=terraform/varfiles/production.tfvars -out=plan.tfplan
 
           OUTPUT=$(terraform show plan.tfplan)
           OUTPUT="$(echo "${OUTPUT}" | grep -v "Refreshing state")"
           OUTPUT="$(echo -n "$OUTPUT" | tail -c 59000)"
           OUTPUT=$(echo "$OUTPUT" | jq -R -s -c .)
-          
+
           echo "output=$OUTPUT" >> $GITHUB_OUTPUT
