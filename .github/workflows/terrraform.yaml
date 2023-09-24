@@ -38,6 +38,7 @@ jobs:
       should_apply: ${{ steps.parse-config.outputs.should_apply }}
       terraform_dir: ${{ steps.parse-config.outputs.terraform_dir }}
     steps:
+      - run: ls
       - name: Parse Configuration
         id: parse-config
         run: |
@@ -64,8 +65,6 @@ jobs:
           echo "should_plan: $SHOULD_PLAN"
           echo "should_apply: $SHOULD_APPLY"
           echo "terraform_dir: $TERRAFORM_DIR"
-
-          echo "All files: $(ls)"
 
           echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
           echo "varfile=$VARFILE" >> $GITHUB_OUTPUT
