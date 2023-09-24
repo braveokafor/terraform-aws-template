@@ -80,3 +80,75 @@ jobs:
           echo "terraform_dir=$TERRAFORM_DIR" >> $GITHUB_OUTPUT
 
           cat $GITHUB_OUTPUT
+
+  terraform-format-checks:
+    name: Terraform Format Checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      fmt_outcome: ${{ steps.fmt.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Terraform Format
+        id: fmt
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        run: terraform fmt -list=true -check=true -recursive
+
+  terraform-plan:
+    if: needs.setup.outputs.should_plan == 'true'
+    needs: [terraform-format-checks, setup]
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      WORKSPACE: "${{ needs.setup.outputs.workspace }}"
+      VARFILE: "${{ needs.setup.outputs.varfile }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          role-duration-seconds: 1800
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        run: terraform init
+
+      - name: Set Terraform Workspace
+        id: set-workspace
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        run: |
+          echo "Workspace: $WORKSPACE"
+
+          terraform workspace new $WORKSPACE || terraform workspace select $WORKSPACE
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        run: |
+          OUTPUT=$(terraform validate -no-color)
+
+          echo $OUTPUT
+          echo "output=$OUTPUT" >> $GITHUB_OUTPUT
