@@ -160,7 +160,7 @@ jobs:
         id: plan
         working-directory: ${{ env.TERRAFORM_PATH }}
         run: |
-          VARFILES_CMD=$(echo '$VARFILES' | sed 's/[\[\]"]//g' | awk -F, '{for(i=1;i<=NF;i++) printf "-var-file=\"%s\" ", $i}')
+          VARFILES_CMD=$(echo "$VARFILES" | sed 's/[\[\]"]//g' | awk -F, '{for(i=1;i<=NF;i++) printf "-var-file=\"%s\" ", $i}')
 
           echo $VARFILES_CMD
 
