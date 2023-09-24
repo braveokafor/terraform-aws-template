@@ -85,4 +85,4 @@ jobs:
           echo "should_apply=$SHOULD_APPLY" >> $GITHUB_OUTPUT
           echo "terraform_dir=$TERRAFORM_DIR" >> $GITHUB_OUTPUT
 
-          echo $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
