@@ -5,8 +5,8 @@
             "BRANCH": "main",
             "WORKSPACE": "production",
             "VARFILES": [
-                "terraform/production.tfvars",
-                "terraform/common.tfvars"
+                "varfiles/production.tfvars",
+                "varfiles/common.tfvars"
             ],
             "SHOULD_PLAN": true,
             "SHOULD_APPLY": true
@@ -15,8 +15,8 @@
             "BRANCH": "develop",
             "WORKSPACE": "develop",
             "VARFILES": [
-                "terraform/develop.tfvars",
-                "terraform/common.tfvars"
+                "varfiles/develop.tfvars",
+                "varfiles/common.tfvars"
             ],
             "SHOULD_PLAN": true,
             "SHOULD_APPLY": true
@@ -25,8 +25,8 @@
             "BRANCH": "staging",
             "WORKSPACE": "staging",
             "VARFILES": [
-                "terraform/staging.tfvars",
-                "terraform/common.tfvars"
+                "varfiles/staging.tfvars",
+                "varfiles/common.tfvars"
             ],
             "SHOULD_PLAN": true,
             "SHOULD_APPLY": true
@@ -35,8 +35,8 @@
             "BRANCH": "feat/*",
             "WORKSPACE": "develop",
             "VARFILES": [
-                "terraform/develop.tfvars",
-                "terraform/common.tfvars"
+                "varfiles/develop.tfvars",
+                "varfiles/common.tfvars"
             ],
             "SHOULD_PLAN": true,
             "SHOULD_APPLY": false
