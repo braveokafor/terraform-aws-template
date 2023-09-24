@@ -65,8 +65,7 @@ jobs:
           echo "should_apply: $SHOULD_APPLY"
           echo "terraform_dir: $TERRAFORM_DIR"
 
-          all_files=$(ls)
-          echo "All files: $all_files"
+          echo "All files: $(ls)"
 
           echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
           echo "varfile=$VARFILE" >> $GITHUB_OUTPUT
