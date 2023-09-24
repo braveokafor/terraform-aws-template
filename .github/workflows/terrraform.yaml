@@ -47,13 +47,14 @@ jobs:
         id: parse-config
         run: |
           export BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          export BRANCH_PREFIX="${BRANCH_NAME%/*}"
 
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
+              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval -j | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))'
           elif [ -f "tf-cfg.json" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.json | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
+              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval -j | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))'
           else
               TERRAFORM_DIR=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
