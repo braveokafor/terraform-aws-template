@@ -2,6 +2,16 @@
     "TERRAFORM_DIR": "terraform",
     "BRANCHES": [
         {
+            "BRANCH": "main",
+            "WORKSPACE": "production",
+            "VARFILES": [
+                "production.tfvars",
+                "common.tfvars"
+            ],
+            "SHOULD_PLAN": true,
+            "SHOULD_APPLY": true
+        },
+        {
             "BRANCH": "develop",
             "WORKSPACE": "develop",
             "VARFILES": [

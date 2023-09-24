@@ -123,7 +123,6 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          role-duration-seconds: 1800
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
