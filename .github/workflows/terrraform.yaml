@@ -160,11 +160,9 @@ jobs:
         id: plan
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
-          VARFILES_CMD=$(echo "$VARFILES" | jq -r '.[] | "-var-file=\"" + . + "\"" ' | tr '\n' ' ')
+          VARFILES_CMD=$(echo "$VARFILES" | jq -r '.[] | "-var-file=" + .' | tr '\n' ' ')
 
-          #terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
-          VARFILES_CMDS="-var-file=varfiles/production.tfvars -var-file=varfiles/common.tfvars"
-          terraform plan -no-color -input=false $VARFILES_CMDS -out=plan.tfplan
+          terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
 
           OUTPUT=$(terraform show plan.tfplan)
           OUTPUT="$(echo "${OUTPUT}" | grep -v "Refreshing state")"
