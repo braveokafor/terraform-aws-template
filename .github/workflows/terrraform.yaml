@@ -38,17 +38,23 @@ jobs:
       should_apply: ${{ steps.parse-config.outputs.should_apply }}
       terraform_dir: ${{ steps.parse-config.outputs.terraform_dir }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
       - name: Parse Configuration
         id: parse-config
         run: |
-          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          export BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          export BRANCH_PREFIX="${BRANCH_NAME%/*}/"
 
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
+              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval -o=json | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
           elif [ -f "tf-cfg.json" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.json | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval '.BRANCHES[] | select(.BRANCH == env(BRANCH_NAME))')
+              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval -o=json | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
           else
               TERRAFORM_DIR=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
