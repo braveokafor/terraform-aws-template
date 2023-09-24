@@ -43,4 +43,12 @@ jobs:
         id: parse-config
         run: |
           BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
-          BRANCH_CONFIG="$(cat tf-cfg.json || ${{ env.DEFAULT_BRANCH_CONFIG }})"
+
+          if [ -f "tf-cfg.yaml" ]; then
+              BRANCH_CONFIG=$(cat tf-cfg.yaml)
+          elif [ -f "tf-cfg.json" ]; then
+              BRANCH_CONFIG=$(cat tf-cfg.json)
+          else
+              BRANCH_CONFIG="${{ env.DEFAULT_BRANCH_CONFIG }}"
+          fi
+
