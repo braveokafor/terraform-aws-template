@@ -170,6 +170,7 @@ jobs:
           OUTPUT=$(echo "$OUTPUT" | jq -R -s -c .)
 
           echo "output=$OUTPUT" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
 
       - name: Setup Graphviz
         id: setup-graphviz
