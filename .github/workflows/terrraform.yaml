@@ -49,6 +49,12 @@ jobs:
           export BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
           export BRANCH_PREFIX="${BRANCH_NAME%/*}/"
 
+          if [[ $BRANCH_NAME == *"/"* ]]; then
+            export BRANCH_PREFIX="${BRANCH_NAME%/*}/"
+          else
+            export BRANCH_PREFIX=$BRANCH_NAME
+          fi
+
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval -o=json | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
