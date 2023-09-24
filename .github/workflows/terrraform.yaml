@@ -54,8 +54,8 @@ jobs:
               BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
           fi
 
-          echo BRANCH_CONFIG | yq
-          echo BRANCH_CONFIG | jq
+          #echo BRANCH_CONFIG | yq
+          #echo BRANCH_CONFIG | jq
 
 
           WORKSPACE=$(echo "$BRANCH_CONFIG" | yq eval ".WORKSPACE" -)
