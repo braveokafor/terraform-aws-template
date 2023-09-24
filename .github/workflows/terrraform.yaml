@@ -47,7 +47,7 @@ jobs:
         id: parse-config
         run: |
           export BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
-          export BRANCH_PREFIX="${BRANCH_NAME%/*}"
+          export BRANCH_PREFIX="${BRANCH_NAME%/*}/"
 
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
