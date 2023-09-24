@@ -113,9 +113,9 @@ jobs:
       pull-requests: write
       id-token: write
     env:
-      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      #BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
       WORKSPACE: "${{ needs.setup.outputs.workspace }}"
-      VARFILE: "${{ needs.setup.outputs.varfile }}"
+      VARFILES: "${{ needs.setup.outputs.varfile }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -154,4 +154,20 @@ jobs:
           OUTPUT=$(terraform validate -no-color)
 
           echo $OUTPUT
+          echo "output=$OUTPUT" >> $GITHUB_OUTPUT
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        continue-on-error: true
+        run: |
+          VARFILES_CMD=$(echo $input | sed 's/[\[\]"]//g' | awk -F, '{for(i=1;i<=NF;i++) printf "-var-file=\"%s\" ", $i}')
+
+          terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
+
+          OUTPUT=$(terraform show plan.tfplan)
+          OUTPUT="$(echo "${OUTPUT}" | grep -v "Refreshing state")"
+          OUTPUT="$(echo -n "$OUTPUT" | tail -c 59000)"
+          OUTPUT=$(echo "$OUTPUT" | jq -R -s -c .)
+
           echo "output=$OUTPUT" >> $GITHUB_OUTPUT
