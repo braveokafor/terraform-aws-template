@@ -51,10 +51,10 @@ jobs:
 
           if [ -f "tf-cfg.yaml" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.yaml | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval -j | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))'
+              BRANCH_CONFIG=$(cat tf-cfg.yaml | yq eval -j | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
           elif [ -f "tf-cfg.json" ]; then
               TERRAFORM_DIR=$(cat tf-cfg.json | yq eval '.TERRAFORM_DIR')
-              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval -j | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))'
+              BRANCH_CONFIG=$(cat tf-cfg.json | yq eval -j | jq '.BRANCHES[] | select(.BRANCH | startswith("'"$BRANCH_PREFIX"'"))')
           else
               TERRAFORM_DIR=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.TERRAFORM_DIR')
               BRANCH_CONFIG=$(echo "${{ env.DEFAULT_BRANCH_CONFIG }}" | yq eval '.BRANCHES[0]')
