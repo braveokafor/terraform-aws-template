@@ -58,10 +58,10 @@ jobs:
           #echo BRANCH_CONFIG | jq
 
 
-          WORKSPACE=$(echo "$BRANCH_CONFIG" | yq eval ".WORKSPACE" -)
-          VARFILE=$(echo "$BRANCH_CONFIG" | yq eval ".VARFILE" -)
-          SHOULD_PLAN=$(echo "BRANCH_CONFIG" | yq eval ".SHOULD_PLAN" -)
-          SHOULD_APPLY=$(echo "BRANCH_CONFIG" | yq eval ".SHOULD_APPLY" -)
+          WORKSPACE=$(echo "$BRANCH_CONFIG" | yq eval '.WORKSPACE' -)
+          VARFILE=$(echo "$BRANCH_CONFIG" | yq eval '.VARFILE' -)
+          SHOULD_PLAN=$(echo "BRANCH_CONFIG" | yq eval '.SHOULD_PLAN' -)
+          SHOULD_APPLY=$(echo "BRANCH_CONFIG" | yq eval '.SHOULD_APPLY' -)
 
           echo "workspace: $WORKSPACE"
           echo "varfile: $VARFILE"
