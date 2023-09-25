@@ -3,12 +3,10 @@ name: Terraform
 on:
   pull_request:
     branches:
-      - "main"
-      - "develop"
-      - "staging"
-  push:
-    branches:
       - "*"
+  #push:
+  #  branches:
+  #    - "*"
 
 permissions:
   contents: read
@@ -169,7 +167,7 @@ jobs:
 
           terraform plan -no-color -input=false $VARFILES_CMD -out=plan.tfplan
 
-          OUTPUT=$(terraform show plan.tfplan)
+          OUTPUT=$(terraform show plan.tfplan | sed -r "s/\x1B\[[0-?]*[ -/]*[@-~]//g")
           OUTPUT="$(echo "${OUTPUT}" | grep -v "Refreshing state")"
           OUTPUT="$(echo -n "$OUTPUT" | tail -c 59000)"
           OUTPUT=$(echo "$OUTPUT" | jq -R -s -c .)
