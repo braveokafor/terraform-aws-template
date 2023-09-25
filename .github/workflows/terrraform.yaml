@@ -6,13 +6,9 @@ on:
       - "main"
       - "develop"
       - "staging"
-    paths:
-      - "terraform/**"
   push:
     branches:
       - "*"
-    paths:
-      - "terraform/**"
 
 permissions:
   contents: read
