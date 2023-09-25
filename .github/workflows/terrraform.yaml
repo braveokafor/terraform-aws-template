@@ -177,16 +177,14 @@ jobs:
 
       - name: Generate Terraform Graph
         id: generate-graph
-        working-directory: ${{ env.TERRAFORM_PATH }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
-          echo "ls=$(ls)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-
-          #terraform graph -draw-cycles -type=plan-refresh-only -plan=plan.tfplan | dot -Tsvg > plan.svg
+          terraform graph -draw-cycles -type=plan-refresh-only -plan=plan.tfplan | dot -Tsvg > plan.svg
 
       - name: Upload Terraform Plan
         id: upload-artefacts
         uses: actions/upload-artifact@v3
         with:
           name: plan-artefacts
-          path: ${{ env.TERRAFORM_PATH }}/plan.*
+          path: ${{ env.TERRAFORM_DIR }}/plan.*
+          retention-days: 1
