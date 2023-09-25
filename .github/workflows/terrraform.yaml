@@ -263,3 +263,18 @@ jobs:
       - name: Terraform Status
         if: steps.init.outcome == 'failure' || steps.plan.outcome == 'failure'
         run: exit 1
+
+  terraform-apply:
+    if: needs.setup.outputs.should_apply == 'true' && github.event_name != 'pull_request'
+    needs: [terraform-format-checks, terraform-plan, setup]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      WORKSPACE: "${{ needs.setup.outputs.workspace }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
