@@ -171,6 +171,14 @@ jobs:
 
           echo "output=$OUTPUT" >> $GITHUB_OUTPUT
 
+      - name: Upload Terraform Plan as Artifact
+        id: upload-plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan
+          path: ${{ env.TERRAFORM_DIR }}/plan.tfplan
+          retention-days: 1
+
       - name: Setup Graphviz
         id: setup-graphviz
         uses: ts-graphviz/setup-graphviz@v1
@@ -181,10 +189,10 @@ jobs:
         run: |
           terraform graph -draw-cycles -type=plan-refresh-only -plan=plan.tfplan | dot -Tsvg > plan.svg
 
-      - name: Upload Terraform Plan
-        id: upload-artefacts
+      - name: Upload Terraform Graph as Artifact
+        id: upload-graph
         uses: actions/upload-artifact@v3
         with:
-          name: plan-artefacts
-          path: ${{ env.TERRAFORM_DIR }}/plan.*
+          name: graph.svg
+          path: ${{ env.TERRAFORM_DIR }}/plan.svg
           retention-days: 1
