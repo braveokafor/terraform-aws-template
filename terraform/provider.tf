@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket         = "joeyomi-terraform-state"
     dynamodb_table = "tf-remote-state-lock"
-    key            = "tf-state/terraform.tfstate"
+    key            = "tf-state/gh-test/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
   }
