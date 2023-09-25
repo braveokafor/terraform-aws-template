@@ -1,12 +1,18 @@
 name: Terraform
 
 on:
-  push:
-    branches:
-      - "**"
   pull_request:
     branches:
-      - "**"
+      - "main"
+      - "develop"
+      - "staging"
+    paths:
+      - "terraform/**"
+  push:
+    branches:
+      - "*"
+    paths:
+      - "terraform/**"
 
 permissions:
   contents: read
