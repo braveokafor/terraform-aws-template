@@ -220,7 +220,7 @@ jobs:
               return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
             })
 
-            const output = `#### Terraform Workspace 🏗️ \`${{ needs.check-branch.outputs.workspace }}\`
+            const output = `#### Terraform Workspace 🏗️ \`${{ needs.setup.outputs.workspace }}\`
             #### Terraform Format and Style 🖌 \`${{ needs.terraform-format-checks.outputs.fmt_outcome }}\`
             #### Terraform Initialization ⚙️ \`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖 \`${{ steps.validate.outcome }}\`
