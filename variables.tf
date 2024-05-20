@@ -37,12 +37,6 @@ variable "assume_role_arn" {
   default     = ""
 }
 
-variable "assume_role_external_id" {
-  type        = string
-  description = "Extenal ID associated with the \"assume_role_arn\"."
-  default     = "ci-runner"
-}
-
 #------------------------------------------------------------------------------
 # IAM
 #------------------------------------------------------------------------------
