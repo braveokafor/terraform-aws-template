@@ -9,10 +9,11 @@ locals {
   name_pascal_case = replace(title(replace(local.name, "-", " ")), " ", "")
   azs              = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  tags = {
-    environment = var.environment,
-    ManagedBy   = "Terraform"
-  }
+  tags = merge(var.tags,
+    {
+      project     = var.prefix
+      environment = var.environment,
+  })
 }
 
 #------------------------------------------------------------------------------
@@ -27,6 +28,6 @@ data "aws_region" "current" {}
 #------------------------------------------------------------------------------
 # Supporting Resources
 #------------------------------------------------------------------------------
-#resource "random_pet" "this" {
-#  length = 2
-#}
+resource "random_pet" "this" {
+  length = 2
+}

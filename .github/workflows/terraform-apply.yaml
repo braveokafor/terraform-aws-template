@@ -1,0 +1,61 @@
+name: Terraform Apply
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "**.tfvars"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TERRAFORM_VERSION: 1.7.0
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  TERRAFORM_PLAN_BUCKET: ${{ secrets.TERRAFORM_PLAN_BUCKET }} # S3 bucket to store/ retrieve plan files.
+  COMMIT_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  apply:
+    if: ${{ !contains (github.repository, '/terraform-aws-template') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Download Plan
+        id: download-plan
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        run: aws s3 cp s3://${{ env.TERRAFORM_PLAN_BUCKET }}/tf-plan/tfplan-${{ env.COMMIT_SHA }} tfplan
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply "tfplan"

@@ -1,0 +1,52 @@
+name: Rename project from template
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  rename-project:
+    if: ${{ !contains (github.repository, '/terraform-aws-template') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}' | tr '-' '_' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        shell: bash
+
+      - run: echo "REPOSITORY_URLNAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+        shell: bash
+
+      - run: echo "REPOSITORY_OWNER=$(echo '${{ github.repository }}' | awk -F '/' '{print $1}')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Is this still a template
+        id: is-template
+        shell: bash
+        run: |
+          if [ -f ".github/workflows/bootstrap-repo.yaml" ]; then
+            echo "status=true" >> $GITHUB_OUTPUT
+          else
+            echo "status=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Rename the project
+        if: steps.is-template.outputs.status == 'true'
+        run: |
+          echo "Renaming the project with -a(author) ${{ env.REPOSITORY_OWNER }} -n(name) ${{ env.REPOSITORY_NAME }} -u(urlname) ${{ env.REPOSITORY_URLNAME }}"
+
+          .github/bootstrap-repo.sh -a ${{ env.REPOSITORY_OWNER }} -n ${{ env.REPOSITORY_NAME }} -d "Terraform AWS project created by ${{ env.REPOSITORY_OWNER }}."
+
+      - name: Create PR
+        if: steps.is-template.outputs.status == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "✅ Ready to use, remember to update variables"
+          push_options: --force

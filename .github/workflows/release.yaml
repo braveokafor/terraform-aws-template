@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+name: release-please
+jobs:
+  release-please:
+    if: ${{ contains (github.repository, '/terraform-aws-template') }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Confirm README.md is up to date.
+        uses: terraform-docs/gh-actions@v1.1.0
+        with:
+          working-dir: .
+          fail-on-diff: true
+
+      - name: Release Please
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: terraform-module

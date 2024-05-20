@@ -1,25 +1,40 @@
-# Terraform
-.terraform
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
 *.tfstate
-*.tfstate.backup
-.terraform.lock.hcl
-*.tfplan
+*.tfstate.*
+
+*.terraform.lock.hcl
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include override files you do wish to add to version control using negated pattern
+# !example_override.tf
+
+# Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
+# example: *tfplan*
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
 
 # Terragrunt
 .terragrunt-cache
-.terragrunt-cache/*
+.terraform.lock.hcl
 
 # OS X
 .history
 .DS_Store
 scratch.txt
-
-# IntelliJ
-.idea_modules
-*.iml
-*.iws
-*.ipr
-.idea/
-build/
-*/build/
-out/
+.scratch/
+build_files.zip

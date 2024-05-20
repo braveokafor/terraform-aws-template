@@ -5,17 +5,19 @@ module "vpc" {
   #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash" | This is delibrate.
 
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.1.2"
+  version = "5.8.1"
 
   name = "${local.name}-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  azs             = ["${data.aws_region.current.name}a", "${data.aws_region.current.name}b", "${data.aws_region.current.name}c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"]
+  # database_subnets = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24"]
 
   private_subnet_names = []
   public_subnet_names  = []
+  # database_subnet_names = []
 
   manage_default_network_acl = true
   default_network_acl_tags   = { Name = "${local.name}-default" }
@@ -37,13 +39,11 @@ module "vpc" {
   enable_dhcp_options = false
 
   public_subnet_tags = {
-    "scope"                  = "public"
-    "kubernetes.io/role/elb" = 1
+    "scope" = "public"
   }
 
   private_subnet_tags = {
-    "scope"                           = "private"
-    "kubernetes.io/role/internal-elb" = 1
+    "scope" = "private"
   }
 
   tags = local.tags

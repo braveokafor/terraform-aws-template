@@ -1,0 +1,150 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "**.tf"
+      - "**.tfvars"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TERRAFORM_VERSION: 1.7.0
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  TERRAFORM_PLAN_BUCKET: ${{ secrets.TERRAFORM_PLAN_BUCKET }} # S3 bucket to store/ retrieve plan files.
+  COMMIT_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  lint:
+    if: ${{ !contains (github.repository, '/terraform-aws-template') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+    outputs:
+      fmtOutcome: ${{ steps.fmt.outcome }}
+      validateOutcome: ${{ steps.validate.outcome }}
+      checkovOutcome: ${{ steps.checkov.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -list=true -check=true -recursive
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.2500.0
+        continue-on-error: true
+        with:
+          quiet: true
+
+  plan:
+    if: ${{ !contains (github.repository, '/terraform-aws-template') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      planOutcome: ${{ steps.plan.outcome }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan-${{ env.COMMIT_SHA }}
+
+      - name: Upload Plan Artefacts
+        id: upload-plan
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        run: aws s3 cp tfplan-${{ env.COMMIT_SHA }} s3://${{ env.TERRAFORM_PLAN_BUCKET }}/tf-plan/
+
+  comment-on-pr:
+    needs: [lint, plan]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: PR Comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fmtOutcome = "${{ needs.lint.outputs.fmtOutcome }}";
+            const validateOutcome = "${{ needs.lint.outputs.validateOutcome }}";
+            const checkovOutcome = "${{ needs.lint.outputs.checkovOutcome }}";
+            const planOutcome = "${{ needs.plan.outputs.planOutcome }}";
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const output = `#### Checkov Results 🛡️: \`${checkovOutcome}\`
+            \n#### Terraform Fmt Check Results 🧹: \`${fmtOutcome}\`
+            \n#### Terraform Validate Results 🤖 : \`${validateOutcome}\`
+            \n#### Terraform Plan Results 🧪: \`${planOutcome}\`
+            `;
+
+            const botComment = comments.find(comment => comment.user.type === 'Bot' && comment.body.includes('Checkov Results'));
+               
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
