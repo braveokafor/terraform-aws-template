@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/braveokafor/terraform-aws-template/compare/v0.1.1...v0.2.0) (2024-09-28)
+
+
+### Features
+
+* Add Makefile ([1a7ae90](https://github.com/braveokafor/terraform-aws-template/commit/1a7ae90c2cca61c562b52682a0be5f1301b3501e))
+
 ## [0.1.1](https://github.com/braveokafor/terraform-aws-template/compare/v0.1.0...v0.1.1) (2024-05-20)
 
 
