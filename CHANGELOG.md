@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/braveokafor/terraform-aws-template/compare/v0.2.0...v0.3.0) (2025-02-01)
+
+
+### Features
+
+* bump 'vpc module' version ([a0d2740](https://github.com/braveokafor/terraform-aws-template/commit/a0d27406fd7be602b6a6ea493e44b412a9634a24))
+
 ## [0.2.0](https://github.com/braveokafor/terraform-aws-template/compare/v0.1.1...v0.2.0) (2024-09-28)
 
 
