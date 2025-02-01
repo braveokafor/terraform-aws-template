@@ -5,7 +5,7 @@ module "vpc" {
   #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash" | This is delibrate.
 
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.8.1"
+  version = "5.18.1"
 
   name = "${local.name}-vpc"
   cidr = "10.0.0.0/16"
@@ -18,6 +18,8 @@ module "vpc" {
   private_subnet_names = []
   public_subnet_names  = []
   # database_subnet_names = []
+
+  #create_database_subnet_group = true
 
   manage_default_network_acl = true
   default_network_acl_tags   = { Name = "${local.name}-default" }
