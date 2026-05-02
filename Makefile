@@ -68,7 +68,7 @@ lint:
 		echo "tflint not found. Please install TFLint to run static code analysis."; \
 		exit 1; \
 	fi
-	
+
 # Run security scan with Checkov
 security:
 	@if command -v checkov >/dev/null 2>&1; then \
@@ -78,7 +78,7 @@ security:
 		echo "Checkov not found. Please install Checkov to run security scans."; \
 		exit 1; \
 	fi
-	
+
 # Generate module documentation with terraform-docs
 doc:
 	@if command -v terraform-docs >/dev/null 2>&1; then \

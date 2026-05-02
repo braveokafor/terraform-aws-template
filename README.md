@@ -39,20 +39,20 @@ Terraform template to bootstrap a baseline account on AWS.
 ## Requirements
 
 | Name | Version |
-|------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
+| ---- | ------- |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 6.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Inputs
 
 | Name | Description | Type | Required |
-|------|-------------|------|:--------:|
+| ---- | ----------- | ---- | :------: |
 | <a name="input_admin_user_iam_policies"></a> [admin\_user\_iam\_policies](#input\_admin\_user\_iam\_policies) | Admin user IAM policies | `list(string)` | no |
 | <a name="input_admin_users"></a> [admin\_users](#input\_admin\_users) | IAM users (username) to add to the `Admins` group. | `list(string)` | no |
 | <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | AWS role to assume when provisioning resources | `string` | no |
@@ -72,6 +72,6 @@ Terraform template to bootstrap a baseline account on AWS.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | VPC ID |
 <!-- END_TF_DOCS -->

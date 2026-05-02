@@ -12,7 +12,6 @@ permissions:
   id-token: write
 
 env:
-  TERRAFORM_VERSION: 1.7.0
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   TERRAFORM_PLAN_BUCKET: ${{ secrets.TERRAFORM_PLAN_BUCKET }} # S3 bucket to store/ retrieve plan files.
@@ -32,14 +31,13 @@ jobs:
       checkovOutcome: ${{ steps.checkov.outcome }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v4.0.0
         with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
       - name: Terraform Format Check
@@ -56,7 +54,7 @@ jobs:
 
       - name: Run Checkov
         id: checkov
-        uses: bridgecrewio/checkov-action@v12.2500.0
+        uses: bridgecrewio/checkov-action@v12.3101.0
         continue-on-error: true
         with:
           quiet: true
@@ -72,14 +70,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v4.0.0
         with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
       - name: Configure AWS Credentials
@@ -110,7 +107,7 @@ jobs:
       id-token: write
     steps:
       - name: PR Comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -132,7 +129,7 @@ jobs:
             `;
 
             const botComment = comments.find(comment => comment.user.type === 'Bot' && comment.body.includes('Checkov Results'));
-               
+
             if (botComment) {
               github.rest.issues.updateComment({
                 owner: context.repo.owner,

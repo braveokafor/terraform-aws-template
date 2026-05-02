@@ -5,7 +5,7 @@ module "vpc" {
   #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash" | This is delibrate.
 
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.18.1"
+  version = "6.6.1"
 
   name = "${local.name}-vpc"
   cidr = "10.0.0.0/16"
