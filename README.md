@@ -14,7 +14,7 @@ Terraform template to bootstrap a baseline account on AWS.
 | CI/CD | GitHub Actions to `lint`, `plan`, and `apply` to AWS | `.github/workflows/terraform-apply.yaml`, `.github/workflows/terraform-plan.yaml` |
 
 ## Usage
-> **DO NOT FORK** this is meant to be used from **[Use this template](https://github.com/braveokafor/terraform-aws-template/generate)** feature.
+> **YOU DON'T NEED TOO FORK TO USE** this is meant to be used from **[Use this template](https://github.com/braveokafor/terraform-aws-template/generate)** feature.
 
 1. Click on **[Use this template](https://github.com/braveokafor/terraform-aws-template/generate)**
 3. Give a name to your repo
