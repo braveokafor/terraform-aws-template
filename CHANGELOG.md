@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/braveokafor/terraform-aws-template/compare/v0.3.0...v0.3.1) (2026-05-02)
+
+
+### Bug Fixes
+
+* debug release action ([9ec5698](https://github.com/braveokafor/terraform-aws-template/commit/9ec5698f10500ad024a3f8c8b921e5b883b8dca7))
+
 ## [0.3.0](https://github.com/braveokafor/terraform-aws-template/compare/v0.2.0...v0.3.0) (2025-02-01)
 
 
