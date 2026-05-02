@@ -1,6 +1,8 @@
 name: Rename project from template
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
 
 permissions:
   contents: read
@@ -13,7 +15,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
@@ -46,7 +48,7 @@ jobs:
 
       - name: Create PR
         if: steps.is-template.outputs.status == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
           commit_message: "✅ Ready to use, remember to update variables"
           push_options: --force

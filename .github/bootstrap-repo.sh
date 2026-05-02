@@ -18,7 +18,7 @@ original_author="braveokafor"
 original_name="Terraform AWS Template"
 original_description="Terraform template to bootstrap a baseline account on AWS."
 
-for filename in $(git ls-files) 
+for filename in $(git ls-files)
 do
     sed -i "s/$original_author/$author/g" $filename
     sed -i "s/$original_name/$name/g" $filename
